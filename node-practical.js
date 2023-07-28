@@ -11,7 +11,10 @@
  *      86400 -> 02.06.2020
  */
 function secondsToDate(seconds) {
-
+    const startDate = new Date("2020-06-01T00:00:00.202020Z");
+    const millisecondsToAdd = seconds * 1000;
+    const targetDate = new Date(startDate.getTime() + millisecondsToAdd);
+    return targetDate;
 }
 
 /**
@@ -26,7 +29,20 @@ function secondsToDate(seconds) {
  *      10 -> "1010"
  */
 function toBase2Converter(decimal) {
+    if (decimal === 0) {
+        return "0";
+    }
 
+    let binary = "";
+    let quotient = decimal;
+
+    while (quotient > 0) {
+        const remainder = quotient % 2;
+        binary = remainder + binary;
+        quotient = Math.floor(quotient / 2);
+    }
+
+    return binary;
 }
 
 /**
@@ -42,7 +58,9 @@ function toBase2Converter(decimal) {
  *      'T', 'test it' -> 2
  */
 function substringOccurrencesCounter(substring, text) {
-
+    const regex = new RegExp(substring, "gi");
+    const matches = text.match(regex);
+    return matches ? matches.length : 0;
 }
 
 /**
@@ -55,8 +73,12 @@ function substringOccurrencesCounter(substring, text) {
  *      "Hello" -> "HHeelloo"
  *      "Hello world" -> "HHeello  wworrldd" // o, l is repeated more then once. Space was also repeated
  */
-function repeatingLitters(string) {
-
+function repeatingLetters(string) {
+    let result = '';
+    for (const char of string) {
+        result += char + char;
+    }
+    return result;
 }
 
 /**
@@ -77,7 +99,9 @@ function repeatingLitters(string) {
  *      f3() ➞ ""
  */
 function redundant(str) {
-
+    return function () {
+        return str;
+    };
 }
 
 /**
@@ -87,7 +111,21 @@ function redundant(str) {
  * @return {number}
  */
 function towerHanoi(disks) {
+    if (disks === 1) {
+        return 1;
+    } else {
+        // Move `disks-1` from source to auxiliary peg
+        const steps1 = towerHanoi(disks - 1);
 
+        // Move the largest disk from source to destination peg
+        const steps2 = 1;
+
+        // Move `disks-1` from auxiliary to destination peg
+        const steps3 = towerHanoi(disks - 1);
+
+        // Total steps required = steps1 + steps2 + steps3
+        return steps1 + steps2 + steps3;
+    }
 }
 
 /**
@@ -99,6 +137,21 @@ function towerHanoi(disks) {
  *
  */
 function matrixMultiplication(matrix1, matrix2) {
+    const n = matrix1.length;
+    const result = [];
+
+    for (let i = 0; i < n; i++) {
+        result[i] = [];
+        for (let j = 0; j < n; j++) {
+            let sum = 0;
+            for (let k = 0; k < n; k++) {
+                sum += matrix1[i][k] * matrix2[k][j];
+            }
+            result[i][j] = sum;
+        }
+    }
+
+    return result;
 }
 
 /**
@@ -117,5 +170,84 @@ function matrixMultiplication(matrix1, matrix2) {
  *      gather("e")("l")("o")("l")("!")("h").order(5)(0)(1)(3)(2)(4).get()  ➞ "hello"
  */
 function gather(str) {
+    let characters = [str];
 
+    function gatherFunction(char) {
+        characters.push(char);
+        return gatherFunction;
+    }
+
+    function order(index) {
+        let orderedCharacters = [];
+        orderedCharacters.push(characters[index]);
+
+        function orderFunction(index) {
+            orderedCharacters.push(characters[index]);
+            return orderFunction;
+        }
+
+        orderFunction.get = function () {
+            return orderedCharacters.join('');
+        };
+
+        return orderFunction;
+    }
+
+    gatherFunction.order = order;
+    return gatherFunction;
 }
+
+function programOutput() {
+    console.log("First task");
+    console.log(secondsToDate(31536000));
+    console.log(secondsToDate(0));
+    console.log(secondsToDate(86400));
+    console.log("----------");
+    console.log("Second task");
+    console.log(toBase2Converter(5));
+    console.log(toBase2Converter(10));
+    console.log("----------");
+    console.log("Third task");
+    console.log(substringOccurrencesCounter('a', 'test it'));
+    console.log(substringOccurrencesCounter('t', 'test it'));
+    console.log(substringOccurrencesCounter('T', 'test it'));
+    console.log(substringOccurrencesCounter('it', 'test it it'));
+    console.log("----------");
+    console.log("Forth task");
+    console.log(repeatingLetters("Hello"));
+    console.log(repeatingLetters("Hello world"));
+    console.log("----------");
+    console.log("Fifth task");
+    const f1 = redundant("apple");
+    console.log(f1());
+    const f2 = redundant("pear");
+    console.log(f2());
+    const f3 = redundant("");
+    console.log(f3());
+    console.log("----------");
+    console.log("Sixth task");
+    console.log(towerHanoi(1));
+    console.log(towerHanoi(2));
+    console.log(towerHanoi(3));
+    console.log(towerHanoi(4));
+    console.log("----------");
+    console.log("Seventh task");
+    const matrix1 = [
+        [1, 2],
+        [3, 4]
+    ];
+    const matrix2 = [
+        [5, 6],
+        [7, 8]
+    ];
+    const resultMatrix = matrixMultiplication(matrix1, matrix2);
+    console.log(resultMatrix);
+    console.log("----------");
+    console.log("Eightth task");
+    console.log(gather("a")("b")("c").order(0)(1)(2).get());
+    console.log(gather("a")("b")("c").order(2)(1)(0).get());
+    console.log(gather("e")("l")("o")("l")("!")("h").order(5)(0)(1)(3)(2)(4).get());
+    console.log("----------");
+}
+
+programOutput();
